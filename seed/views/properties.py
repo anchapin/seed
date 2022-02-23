@@ -495,7 +495,7 @@ class PropertyViewSet(ViewSet, ProfileIdMixin):
 
         merged_state = merge_properties(state_ids, organization_id, 'Manual Match')
 
-        merge_count, link_count, view_id = match_merge_link(merged_state.propertyview_set.first().id, 'PropertyState')
+        merge_count, link_count, view_id = match_merge_link(merged_state.propertyview_set.first().id, 'PropertyState', None, False)
 
         result = {
             'status': 'success'
@@ -722,14 +722,14 @@ class PropertyViewSet(ViewSet, ProfileIdMixin):
     @ajax_request_class
     @has_perm_class('can_modify_data')
     @action(detail=True, methods=['POST'])
-    def match_merge_link(self, request, pk=None):
+    def match_merge_link(self, request, pk=None, use_newest=True):
         """
         Runs match merge link for an individual property.
 
         Note that this method can return a view_id of None if the given -View
         was not involved in a merge.
         """
-        merge_count, link_count, view_id = match_merge_link(pk, 'PropertyState')
+        merge_count, link_count, view_id = match_merge_link(pk, 'PropertyState', use_newest)
 
         result = {
             'view_id': view_id,
@@ -1150,7 +1150,7 @@ class PropertyViewSet(ViewSet, ProfileIdMixin):
 
                         Note.create_from_edit(request.user.id, property_view, new_property_state_data, previous_data)
 
-                        merge_count, link_count, view_id = match_merge_link(property_view.id, 'PropertyState')
+                        merge_count, link_count, view_id = match_merge_link(property_view.id, 'PropertyState', None, False)
 
                         result.update({
                             'view_id': view_id,

@@ -252,7 +252,7 @@ class TaxlotViewSet(viewsets.ViewSet, OrgMixin, ProfileIdMixin):
 
         merged_state = merge_taxlots(taxlot_state_ids, organization_id, 'Manual Match')
 
-        merge_count, link_count, view_id = match_merge_link(merged_state.taxlotview_set.first().id, 'TaxLotState')
+        merge_count, link_count, view_id = match_merge_link(merged_state.taxlotview_set.first().id, 'TaxLotState', None, False)
 
         result = {
             'status': 'success'
@@ -460,7 +460,7 @@ class TaxlotViewSet(viewsets.ViewSet, OrgMixin, ProfileIdMixin):
     @ajax_request_class
     @has_perm_class('can_modify_data')
     @action(detail=True, methods=['POST'])
-    def match_merge_link(self, request, pk=None):
+    def match_merge_link(self, request, pk=None, use_newest=True):
         """
         Runs match merge link for an individual taxlot.
 
@@ -473,7 +473,7 @@ class TaxlotViewSet(viewsets.ViewSet, OrgMixin, ProfileIdMixin):
             pk=pk,
             cycle__organization_id=org_id
         )
-        merge_count, link_count, view_id = match_merge_link(taxlot_view.pk, 'TaxLotState')
+        merge_count, link_count, view_id = match_merge_link(taxlot_view.pk, 'TaxLotState', use_newest)
 
         result = {
             'view_id': view_id,
@@ -756,7 +756,7 @@ class TaxlotViewSet(viewsets.ViewSet, OrgMixin, ProfileIdMixin):
 
                         Note.create_from_edit(request.user.id, taxlot_view, new_taxlot_state_data, previous_data)
 
-                        merge_count, link_count, view_id = match_merge_link(taxlot_view.id, 'TaxLotState')
+                        merge_count, link_count, view_id = match_merge_link(taxlot_view.id, 'TaxLotState', None, False)
 
                         result.update({
                             'view_id': view_id,

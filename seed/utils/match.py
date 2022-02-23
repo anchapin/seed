@@ -69,7 +69,7 @@ def matching_criteria_column_names(organization_id, table_name):
     }
 
 
-def _merge_matches_across_cycles(matching_views, org_id, given_state_id, StateClass):
+def _merge_matches_across_cycles(matching_views, org_id, given_state_id, StateClass, use_latest):
     """
     This is a helper method for match_merge_link().
 
@@ -102,7 +102,7 @@ def _merge_matches_across_cycles(matching_views, org_id, given_state_id, StateCl
             values_list('id', flat=True)
         )
 
-        if given_state_id in ordered_ids:
+        if given_state_id in ordered_ids and not use_latest:
             # If the given -State ID is included, give it precedence and
             # capture resulting merged_state ID to be returned
             ordered_ids.remove(given_state_id)
@@ -187,7 +187,7 @@ def _link_matches(matching_views, org_id, view, ViewClass):
     return matching_views.count() - 1
 
 
-def match_merge_link(view_id, StateClassName):
+def match_merge_link(view_id, StateClassName, use_latest=False):
     """
     This method receives a -View's ID, checks for matches for that -View's
     -State across Cycles, merges matches where there are multiple in a Cycle,
@@ -232,7 +232,7 @@ def match_merge_link(view_id, StateClassName):
             **state_appended_matching_criteria
         )
 
-    merge_count, target_state_id = _merge_matches_across_cycles(matching_views, org_id, given_state_id, StateClass)
+    merge_count, target_state_id = _merge_matches_across_cycles(matching_views, org_id, given_state_id, StateClass, use_latest)
 
     # Refresh target_view in case merges changed the target -View in last step.
     target_view = ViewClass.objects.get(state_id=target_state_id)
