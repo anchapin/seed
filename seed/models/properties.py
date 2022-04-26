@@ -799,17 +799,17 @@ def post_save_property_view(sender, **kwargs):
 
 class PropertyAuditLog(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    parent1 = models.ForeignKey('PropertyAuditLog', on_delete=models.CASCADE, blank=True, null=True,
+    parent1 = models.ForeignKey('PropertyAuditLog', on_delete=models.SET_NULL, blank=True, null=True,
                                 related_name='propertyauditlog_parent1')
-    parent2 = models.ForeignKey('PropertyAuditLog', on_delete=models.CASCADE, blank=True, null=True,
+    parent2 = models.ForeignKey('PropertyAuditLog', on_delete=models.SET_NULL, blank=True, null=True,
                                 related_name='propertyauditlog_parent2')
 
     # store the parent states as well so that we can quickly return which state is associated
     # with the parents of the audit log without having to query the parent audit log to grab
     # the state
-    parent_state1 = models.ForeignKey(PropertyState, on_delete=models.CASCADE, blank=True, null=True,
+    parent_state1 = models.ForeignKey(PropertyState, on_delete=models.SET_NULL, blank=True, null=True,
                                       related_name='parent_state1')
-    parent_state2 = models.ForeignKey(PropertyState, on_delete=models.CASCADE, blank=True, null=True,
+    parent_state2 = models.ForeignKey(PropertyState, on_delete=models.SET_NULL, blank=True, null=True,
                                       related_name='parent_state2')
 
     state = models.ForeignKey('PropertyState', on_delete=models.CASCADE, related_name='propertyauditlog_state')
